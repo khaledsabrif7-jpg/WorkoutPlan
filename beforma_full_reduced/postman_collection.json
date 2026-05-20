@@ -1,0 +1,63 @@
+{
+  "info": {
+    "name": "BeForma AI Fitness & Nutrition API - Reduced Food DB",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8000"}
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {"method": "GET", "url": "{{baseUrl}}/health"}
+    },
+    {
+      "name": "Generate Plan - AI Suggest Mode",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{baseUrl}}/generate-plan",
+        "body": {"mode": "raw", "raw": "{\n  \"age\": 24,\n  \"gender\": \"male\",\n  \"height\": 178,\n  \"weight\": 82,\n  \"fitnessGoal\": \"lose\",\n  \"activityLevel\": \"Sedentary\",\n  \"experienceLevel\": \"Beginner\",\n  \"workoutLocation\": \"Home\",\n  \"dietaryPreference\": \"normal\",\n  \"selectionMode\": \"ai_suggest\"\n}"}
+      }
+    },
+    {
+      "name": "Generate Plan - User Cart Mode",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{baseUrl}}/generate-plan",
+        "body": {"mode": "raw", "raw": "{\n  \"age\": 24,\n  \"gender\": \"male\",\n  \"height\": 178,\n  \"weight\": 82,\n  \"fitnessGoal\": \"gain\",\n  \"activityLevel\": \"Moderately Active\",\n  \"experienceLevel\": \"Intermediate\",\n  \"workoutLocation\": \"Gym\",\n  \"dietaryPreference\": \"normal\",\n  \"selectionMode\": \"user_cart\",\n  \"selectedFoods\": [\n    {\"food_id\": \"chicken_breast_cooked\", \"quantity_g\": 200},\n    {\"food_id\": \"rice_white_cooked\", \"quantity_g\": 250},\n    {\"food_id\": \"banana\", \"quantity_g\": 100}\n  ],\n  \"autoFillRemaining\": true,\n  \"allowOverflow\": false\n}"}
+      }
+    },
+    {
+      "name": "Foods Catalog",
+      "request": {"method": "GET", "url": "{{baseUrl}}/foods?limit=20"}
+    },
+    {
+      "name": "Food Categories",
+      "request": {"method": "GET", "url": "{{baseUrl}}/foods/categories"}
+    },
+    {
+      "name": "Cart Preview",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{baseUrl}}/cart/preview",
+        "body": {"mode": "raw", "raw": "{\n  \"age\": 24,\n  \"gender\": \"male\",\n  \"height\": 178,\n  \"weight\": 82,\n  \"fitnessGoal\": \"gain\",\n  \"activityLevel\": \"Moderately Active\",\n  \"dietaryPreference\": \"normal\",\n  \"selectedFoods\": [\n    {\"food_id\": \"chicken_breast_cooked\", \"quantity_g\": 200},\n    {\"food_id\": \"rice_white_cooked\", \"quantity_g\": 250}\n  ]\n}"}
+      }
+    },
+    {
+      "name": "Exercises",
+      "request": {"method": "GET", "url": "{{baseUrl}}/exercises?location=home&limit=20"}
+    },
+    {
+      "name": "Generate Workout",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{baseUrl}}/workout/generate",
+        "body": {"mode": "raw", "raw": "{\n  \"fitnessGoal\": \"gain\",\n  \"experienceLevel\": \"Beginner\",\n  \"workoutLocation\": \"Home\",\n  \"daysPerWeek\": 3\n}"}
+      }
+    }
+  ]
+}

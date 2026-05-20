@@ -1,0 +1,13 @@
+label,type,passed,calorie_accuracy,macro_accuracy,meal_image_coverage,exercise_image_coverage,quality_score,elapsed_ms
+AI Lose Beginner,nutrition,True,98.32,96.21,100.0,,100.0,31.5
+AI Maintain Gym,nutrition,True,97.99,90.76,100.0,,100.0,116.3
+AI Gain Gym,nutrition,True,99.44,97.49,100.0,,100.0,85.5
+AI Vegan Lose,nutrition,True,93.89,68.58,100.0,,81.3,56.2
+AI Pescatarian Gain,nutrition,True,97.46,95.43,100.0,,96.0,127.5
+Cart Underfilled AutoFill,nutrition,True,99.33,98.3,100.0,,86.0,14.9
+Cart Vegan,nutrition,True,98.97,87.51,100.0,,100.0,7.8
+Cart Pescatarian,nutrition,True,99.87,85.94,100.0,,97.0,20.0
+Cart Empty Fallback,nutrition,True,95.65,95.23,100.0,,100.0,81.8
+Workout Home Lose,workout,True,,,,100.0,100,0.1
+Workout Gym Gain,workout,True,,,,100.0,100,0.1
+Workout Advanced Gym,workout,True,,,,100.0,100,0.1

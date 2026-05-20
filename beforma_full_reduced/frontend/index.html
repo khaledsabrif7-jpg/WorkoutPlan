@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeForma Tester Interface</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.12);
+      --text: #eef6ff;
+      --muted: #a8bad3;
+      --line: rgba(255,255,255,.16);
+      --blue: #47a3ff;
+      --green: #46d39a;
+      --red: #ff6b6b;
+      --yellow: #ffd166;
+      --shadow: 0 24px 80px rgba(0,0,0,.28);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Tahoma, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(71,163,255,.35), transparent 28%),
+        radial-gradient(circle at 84% 2%, rgba(70,211,154,.2), transparent 30%),
+        linear-gradient(135deg, #07111f 0%, #0c1b31 55%, #07111f 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { width: min(1220px, calc(100% - 28px)); margin: 0 auto; padding: 26px 0 60px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+    .panel, .hero-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .hero-card { padding: 28px; position: relative; overflow: hidden; }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: rgba(71,163,255,.14);
+      right: -90px; top: -90px;
+    }
+    h1 { margin: 0 0 10px; font-size: clamp(30px, 5vw, 56px); letter-spacing: -1.6px; }
+    h2 { margin: 0 0 16px; font-size: 22px; }
+    h3 { margin: 0 0 12px; font-size: 18px; }
+    p { color: var(--muted); line-height: 1.7; margin: 0; }
+    .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .badge { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: #d9ebff; background: rgba(255,255,255,.06); font-size: 13px; }
+    .status-box { padding: 22px; display: grid; gap: 12px; }
+    .api-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+    label { display: block; color: #d7e8ff; font-size: 13px; margin-bottom: 8px; font-weight: 700; }
+    input, select, button {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 13px;
+      background: rgba(5, 12, 24, .65);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+    }
+    select option { color: #111; }
+    button {
+      cursor: pointer;
+      border: 0;
+      background: linear-gradient(135deg, #47a3ff, #46d39a);
+      color: #04101f;
+      font-weight: 900;
+      transition: transform .15s ease, opacity .15s ease;
+      white-space: nowrap;
+    }
+    button:hover { transform: translateY(-1px); }
+    button.secondary { background: rgba(255,255,255,.1); color: var(--text); border: 1px solid var(--line); }
+    button.danger { background: rgba(255,107,107,.15); color: #ffd9d9; border: 1px solid rgba(255,107,107,.35); }
+    button.small { padding: 8px 10px; font-size: 12px; border-radius: 11px; }
+    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start; }
+    .panel { padding: 18px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .full { grid-column: 1 / -1; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .tab { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid var(--line); }
+    .tab.active { background: linear-gradient(135deg, rgba(71,163,255,.95), rgba(70,211,154,.95)); color: #04101f; border: 0; }
+    .actions { display: grid; gap: 10px; margin-top: 14px; }
+    .hidden { display: none !important; }
+    .msg { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .msg.ok { border-color: rgba(70,211,154,.45); color: #bff6df; }
+    .msg.err { border-color: rgba(255,107,107,.45); color: #ffd6d6; }
+    .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .metric { padding: 15px; border: 1px solid var(--line); background: rgba(255,255,255,.07); border-radius: 18px; }
+    .metric span { color: var(--muted); font-size: 12px; display: block; margin-bottom: 8px; }
+    .metric strong { font-size: 20px; }
+    .results { display: grid; gap: 18px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: rgba(255,255,255,.06); }
+    .card img { width: 100%; height: 145px; object-fit: cover; display: block; background: rgba(255,255,255,.06); }
+    .card-body { padding: 13px; }
+    .card-title { margin: 0 0 8px; font-weight: 900; line-height: 1.35; }
+    .card-meta { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .items { margin-top: 10px; display: grid; gap: 6px; }
+    .item-row { font-size: 12px; color: #cde1f8; display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 6px; }
+    .food-toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .food-list { max-height: 510px; overflow: auto; display: grid; gap: 10px; padding-right: 4px; }
+    .food { display: grid; grid-template-columns: 72px 1fr; gap: 10px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(255,255,255,.055); }
+    .food img { width: 72px; height: 100%; object-fit: cover; min-height: 82px; }
+    .food-info { padding: 10px 10px 10px 0; display: grid; gap: 7px; }
+    .food-name { font-weight: 900; font-size: 13px; line-height: 1.25; }
+    .food-kcal { color: var(--muted); font-size: 12px; }
+    .food-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .cart-list { display: grid; gap: 8px; max-height: 260px; overflow: auto; }
+    .cart-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 14px; padding: 9px; background: rgba(255,255,255,.055); font-size: 13px; }
+    .progress { height: 12px; border-radius: 999px; background: rgba(255,255,255,.12); overflow: hidden; margin: 10px 0; }
+    .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 999px; transition: width .2s ease; }
+    .workout-day { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,.06); margin-bottom: 12px; }
+    .exercise-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .exercise { border: 1px solid rgba(255,255,255,.12); border-radius: 16px; overflow: hidden; background: rgba(0,0,0,.15); }
+    .exercise img { width: 100%; height: 96px; object-fit: cover; display: block; }
+    .exercise div { padding: 9px; font-size: 12px; color: var(--muted); }
+    .exercise b { color: var(--text); display: block; margin-bottom: 4px; }
+    .loader { opacity: .75; pointer-events: none; }
+    @media (max-width: 980px) {
+      .hero, .grid { grid-template-columns: 1fr; }
+      .summary-cards { grid-template-columns: repeat(2, 1fr); }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .exercise-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .form-grid, .food-toolbar, .api-row, .cards, .exercise-grid, .summary-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>BeForma Tester</h1>
+        <p>واجهة تجربة بسيطة للـ API: جرّب حساب الكالوريز، اقتراح الوجبات، Food Cart، وخطة التمرين بالصور.</p>
+        <div class="badge-row">
+          <span class="badge">AI Suggest Mode</span>
+          <span class="badge">User Food Cart</span>
+          <span class="badge">Workout Images</span>
+          <span class="badge">No Name / Email / Phone</span>
+        </div>
+      </div>
+      <div class="panel status-box">
+        <div class="api-row">
+          <div>
+            <label>API Base URL</label>
+            <input id="apiBase" value="http://127.0.0.1:8000" />
+          </div>
+          <button onclick="checkHealth()">Check API</button>
+        </div>
+        <div id="healthMsg" class="msg">شغّل السيرفر الأول: <b>python -m uvicorn main:app --reload</b></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="panel">
+        <h2>User Inputs</h2>
+        <div class="tabs">
+          <button id="aiTab" class="tab active" onclick="setMode('ai_suggest')">AI Suggest</button>
+          <button id="cartTab" class="tab" onclick="setMode('user_cart')">Food Cart</button>
+        </div>
+
+        <div class="form-grid">
+          <div><label>Age</label><input id="age" type="number" value="24" /></div>
+          <div><label>Gender</label><select id="gender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+          <div><label>Height cm</label><input id="height" type="number" value="178" /></div>
+          <div><label>Weight kg</label><input id="weight" type="number" value="82" /></div>
+          <div><label>Goal</label><select id="fitnessGoal"><option value="lose">Lose</option><option value="maintain">Maintain</option><option value="gain">Gain / Bulk</option></select></div>
+          <div><label>Activity</label><select id="activityLevel"><option>Sedentary</option><option>Lightly Active</option><option>Moderately Active</option><option>Very Active</option><option>Super Active</option></select></div>
+          <div><label>Experience</label><select id="experienceLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+          <div><label>Workout Location</label><select id="workoutLocation"><option>Home</option><option>Gym</option></select></div>
+          <div class="full"><label>Diet</label><select id="dietaryPreference"><option value="normal">Normal</option><option value="vegetarian">Vegetarian</option><option value="vegan">Vegan</option><option value="pescatarian">Pescatarian</option><option value="dairy_free">Dairy Free</option><option value="gluten_free">Gluten Free</option></select></div>
+        </div>
+
+        <div id="cartPanel" class="hidden">
+          <hr style="border-color:rgba(255,255,255,.12); margin:18px 0;" />
+          <h3>Food Cart</h3>
+          <div class="food-toolbar">
+            <select id="category" onchange="loadFoods()"><option value="">All Categories</option></select>
+            <input id="foodSearch" placeholder="Search food..." oninput="debouncedLoadFoods()" />
+          </div>
+          <div id="foodList" class="food-list"></div>
+          <h3 style="margin-top:16px;">Selected Foods</h3>
+          <div id="cartList" class="cart-list"></div>
+          <div class="progress"><div id="cartBar" class="bar"></div></div>
+          <div id="cartMsg" class="msg">اختار أكل من فوق، كل ضغطة = 50g.</div>
+          <div class="actions">
+            <button class="secondary" onclick="previewCart()">Preview Cart</button>
+            <button class="danger" onclick="clearCart()">Clear Cart</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn" onclick="generatePlan()">Generate Plan</button>
+          <button class="secondary" onclick="generateWorkoutOnly()">Workout Only</button>
+        </div>
+      </aside>
+
+      <main class="results">
+        <div id="errorBox" class="msg err hidden"></div>
+        <div id="resultSummary" class="summary-cards hidden"></div>
+
+        <section class="panel">
+          <h2>Diet Plan</h2>
+          <div id="meals" class="cards"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Workout Plan</h2>
+          <div id="workout"></div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+<script>
+  let mode = 'ai_suggest';
+  let cart = {};
+  let foodCache = [];
+  let debounceTimer = null;
+
+  const $ = (id) => document.getElementById(id);
+  const api = (path) => `${$('apiBase').value.replace(/\/$/, '')}${path}`;
+
+  function setMode(next) {
+    mode = next;
+    $('aiTab').classList.toggle('active', mode === 'ai_suggest');
+    $('cartTab').classList.toggle('active', mode === 'user_cart');
+    $('cartPanel').classList.toggle('hidden', mode !== 'user_cart');
+    if (mode === 'user_cart') {
+      loadCategories();
+      loadFoods();
+      renderCart();
+    }
+  }
+
+  function payloadBase() {
+    return {
+      age: Number($('age').value),
+      gender: $('gender').value,
+      height: Number($('height').value),
+      weight: Number($('weight').value),
+      fitnessGoal: $('fitnessGoal').value,
+      activityLevel: $('activityLevel').value,
+      experienceLevel: $('experienceLevel').value,
+      workoutLocation: $('workoutLocation').value,
+      dietaryPreference: $('dietaryPreference').value
+    };
+  }
+
+  async function fetchJson(path, options = {}) {
+    const res = await fetch(api(path), {
+      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      ...options
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const message = data?.detail?.message || data?.detail?.error || data?.detail || `HTTP ${res.status}`;
+      throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
+    }
+    return data;
+  }
+
+  async function checkHealth() {
+    try {
+      const data = await fetchJson('/health');
+      $('healthMsg').className = 'msg ok';
+      $('healthMsg').innerHTML = `API شغال ✅ | Foods: <b>${data.foods_count}</b> | Meals: <b>${data.meals_count}</b> | Exercises: <b>${data.exercises_count}</b>`;
+    } catch (err) {
+      $('healthMsg').className = 'msg err';
+      $('healthMsg').textContent = `API مش شغال: ${err.message}`;
+    }
+  }
+
+  async function loadCategories() {
+    try {
+      const data = await fetchJson('/foods/categories');
+      const select = $('category');
+      const old = select.value;
+      select.innerHTML = '<option value="">All Categories</option>';
+      data.categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.key;
+        opt.textContent = `${c.name || c.key} (${c.count})`;
+        select.appendChild(opt);
+      });
+      select.value = old;
+    } catch (err) {}
+  }
+
+  function debouncedLoadFoods() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(loadFoods, 350);
+  }
+
+  async function loadFoods() {
+    const category = $('category').value;
+    const search = $('foodSearch').value.trim();
+    const diet = $('dietaryPreference').value;
+    let qs = `limit=80&dietaryPreference=${encodeURIComponent(diet)}`;
+    if (category) qs += `&category=${encodeURIComponent(category)}`;
+    if (search) qs += `&search=${encodeURIComponent(search)}`;
+    try {
+      const data = await fetchJson(`/foods?${qs}`);
+      foodCache = data.items || [];
+      renderFoods(foodCache);
+    } catch (err) {
+      $('foodList').innerHTML = `<div class="msg err">${err.message}</div>`;
+    }
+  }
+
+  function renderFoods(foods) {
+    $('foodList').innerHTML = foods.map(f => `
+      <div class="food">
+        <img src="${f.image}" alt="${f.name_en}" onerror="this.style.display='none'" />
+        <div class="food-info">
+          <div class="food-name">${f.name_en}<br><span style="color:#a8bad3;font-weight:600">${f.name_ar || ''}</span></div>
+          <div class="food-kcal">${Math.round(f.calories_per_50g)} kcal / 50g • P ${f.protein_per_50g}g • C ${f.carbs_per_50g}g • F ${f.fat_per_50g}g</div>
+          <div class="food-actions">
+            <button class="small" onclick="addFood('${f.id}', 50)">+ 50g</button>
+            <button class="small secondary" onclick="addFood('${f.id}', 100)">+ 100g</button>
+          </div>
+        </div>
+      </div>
+    `).join('') || '<div class="msg">No foods found.</div>';
+  }
+
+  function addFood(id, grams) {
+    cart[id] = (cart[id] || 0) + grams;
+    renderCart();
+  }
+
+  function removeFood(id, grams) {
+    cart[id] = Math.max(0, (cart[id] || 0) - grams);
+    if (cart[id] === 0) delete cart[id];
+    renderCart();
+  }
+
+  function clearCart() {
+    cart = {};
+    renderCart();
+  }
+
+  function selectedFoodsArray() {
+    return Object.entries(cart).map(([food_id, quantity_g]) => ({ food_id, quantity_g }));
+  }
+
+  function foodName(id) {
+    return foodCache.find(f => f.id === id)?.name_en || id;
+  }
+
+  function renderCart() {
+    const entries = selectedFoodsArray();
+    $('cartList').innerHTML = entries.map(x => `
+      <div class="cart-row">
+        <div><b>${foodName(x.food_id)}</b><br><span style="color:#a8bad3">${x.quantity_g}g</span></div>
+        <button class="small secondary" onclick="removeFood('${x.food_id}', 50)">-50g</button>
+        <button class="small" onclick="addFood('${x.food_id}', 50)">+50g</button>
+      </div>
+    `).join('') || '<div class="msg">Cart is empty.</div>';
+    $('cartBar').style.width = '0%';
+    $('cartMsg').className = 'msg';
+    $('cartMsg').textContent = 'اضغط Preview Cart عشان تشوف نسبة امتلاء السلة.';
+  }
+
+  async function previewCart() {
+    try {
+      const body = { ...payloadBase(), selectedFoods: selectedFoodsArray() };
+      const data = await fetchJson('/cart/preview', { method: 'POST', body: JSON.stringify(body) });
+      const pct = Math.min(120, data.progress_pct || 0);
+      $('cartBar').style.width = `${Math.min(100, pct)}%`;
+      $('cartMsg').className = `msg ${data.status === 'over_target' ? 'err' : 'ok'}`;
+      $('cartMsg').innerHTML = `Status: <b>${data.status}</b><br>Total: <b>${Math.round(data.cart_totals.calories)}</b> / ${data.daily_calorie_target} kcal<br>Remaining: <b>${Math.round(data.remaining.calories)}</b> kcal`;
+    } catch (err) {
+      $('cartMsg').className = 'msg err';
+      $('cartMsg').textContent = err.message;
+    }
+  }
+
+  function showError(message) {
+    $('errorBox').classList.remove('hidden');
+    $('errorBox').textContent = message;
+  }
+  function clearError() { $('errorBox').classList.add('hidden'); $('errorBox').textContent = ''; }
+
+  async function generatePlan() {
+    clearError();
+    $('generateBtn').classList.add('loader');
+    $('generateBtn').textContent = 'Generating...';
+    try {
+      const body = {
+        ...payloadBase(),
+        selectionMode: mode,
+        selectedFoods: mode === 'user_cart' ? selectedFoodsArray() : [],
+        autoFillRemaining: true,
+        allowOverflow: false
+      };
+      const data = await fetchJson('/generate-plan', { method: 'POST', body: JSON.stringify(body) });
+      renderResult(data);
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      $('generateBtn').classList.remove('loader');
+      $('generateBtn').textContent = 'Generate Plan';
+    }
+  }
+
+  async function generateWorkoutOnly() {
+    clearError();
+    try {
+      const body = {
+        fitnessGoal: $('fitnessGoal').value,
+        experienceLevel: $('experienceLevel').value,
+        workoutLocation: $('workoutLocation').value
+      };
+      const data = await fetchJson('/workout/generate', { method: 'POST', body: JSON.stringify(body) });
+      renderWorkout(data.workout_plan);
+    } catch (err) { showError(err.message); }
+  }
+
+  function renderResult(data) {
+    const q = data.plan_quality || {};
+    $('resultSummary').classList.remove('hidden');
+    $('resultSummary').innerHTML = `
+      <div class="metric"><span>BMI</span><strong>${data.bmi}</strong><div class="card-meta">${data.bmi_category}</div></div>
+      <div class="metric"><span>Calories</span><strong>${data.daily_calorie_target}</strong><div class="card-meta">kcal/day</div></div>
+      <div class="metric"><span>Macros</span><strong>${data.macros.protein_grams}P</strong><div class="card-meta">${data.macros.carbs_grams}C / ${data.macros.fat_grams}F</div></div>
+      <div class="metric"><span>Quality</span><strong>${q.quality_score ?? '-'}</strong><div class="card-meta">${data.meta.selection_mode}</div></div>
+    `;
+    renderMeals(data.recommendations.diet_plan || []);
+    renderWorkout(data.recommendations.workout_plan);
+  }
+
+  function renderMeals(meals) {
+    $('meals').innerHTML = meals.map(m => `
+      <article class="card">
+        <img src="${m.image}" alt="${m.name}" onerror="this.style.display='none'" />
+        <div class="card-body">
+          <div class="card-title">${m.name}</div>
+          <div class="card-meta">${m.meal_type} • ${Math.round(m.calories)} kcal<br>P ${Math.round(m.protein)}g • C ${Math.round(m.carbs)}g • F ${Math.round(m.fat)}g</div>
+          <div class="items">
+            ${(m.items || []).slice(0,5).map(i => `
+              <div class="item-row"><span>${i.food_name || i.food_name_en || i.food_id || 'item'}</span><span>${Math.round(i.quantity_g || 0)}g</span></div>
+            `).join('')}
+          </div>
+        </div>
+      </article>
+    `).join('') || '<div class="msg">No meals yet. Click Generate Plan.</div>';
+  }
+
+  function renderWorkout(plan) {
+    if (!plan) { $('workout').innerHTML = '<div class="msg">No workout yet.</div>'; return; }
+    const days = plan.weekly_plan || [];
+    $('workout').innerHTML = `
+      <div class="msg ok">${plan.focus || ''}<br>${plan.cardio || ''}</div>
+      ${days.map(day => `
+        <div class="workout-day">
+          <h3>Day ${day.day}: ${day.title}</h3>
+          <p>${day.estimated_duration_minutes || 45} minutes</p>
+          <div class="exercise-grid">
+            ${(day.exercises || []).map(ex => `
+              <div class="exercise">
+                <img src="${ex.image}" alt="${ex.name_en}" onerror="this.style.display='none'" />
+                <div><b>${ex.name_en}</b>${ex.sets} sets × ${ex.reps}<br>Rest: ${ex.rest_seconds}s</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  window.addEventListener('load', () => {
+    checkHealth();
+    renderMeals([]);
+    renderWorkout(null);
+  });
+</script>
+</body>
+</html>
